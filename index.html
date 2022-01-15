@@ -1,69 +1,110 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tour</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <style>
-    #panorama {
-        width: 600px;
-        height: 400px;
-    }
+        #panorama {
+            width: 600px;
+            height: 400px;
+        }
     </style>
 </head>
+
 <body>
 
-<div id="panorama"></div>
-<script>
-pannellum.viewer('panorama', {   
-    "default": {
-        "firstScene": "circle",
-        "author": "Matthew Petroff",
-        "sceneFadeDuration": 1000
-    },
+    <div id="panorama"></div>
+    <script>
+        console.log("AA");
+        var dragHandler =
+            function (event, handlerArgs) {
+                console.log(handlerArgs);
+                console.log("BB");
+                v.removeHotSpot(handlerArgs);
+            }
+        var openModal = function () { alert("hello") };
 
-    "scenes": {
-        "circle": {
-            "title": "Mason Circle",
-            "hfov": 110,
-            "pitch": -3,
-            "yaw": 117,
-            "type": "equirectangular",
-            "panorama": "images/from-tree.jpg",
-            "hotSpots": [
-                {
-                    "pitch": -2.1,
-                    "yaw": 132.9,
-                    "type": "scene",
-                    "text": "Spring House or Dairy",
-                    "sceneId": "house"
-                }
-            ]
-        },
+        v = pannellum.viewer('panorama', {
+            "default": {
+                "firstScene": "circle",
+                "author": "Matthew Petroff",
+                //"hotSpotDebug": true,
+                "sceneFadeDuration": 1000
+            },
 
-        "house": {
-            "title": "Spring House or Dairy",
-            "hfov": 110,
-            "yaw": 5,
-            "type": "equirectangular",
-            "panorama": "images/bma-0.jpg",
-            "hotSpots": [
-                {
-                    "pitch": -0.6,
-                    "yaw": 37.1,
-                    "type": "scene",
-                    "text": "Mason Circle",
-                    "sceneId": "circle",
-                    "targetYaw": -23,
-                    "targetPitch": 2
+            "scenes": {
+                "circle": {
+                    "title": "Mason Circle",
+                    "hfov": 110,
+                    "pitch": -3,
+                    "yaw": 117,
+                    "type": "equirectangular",
+                    "panorama": "images/from-tree.jpg",
+                    "hotSpots": [
+                        {
+                            "id": 0,
+                            "pitch": 5,
+                            "yaw": 11,
+                            "type": "info",
+                            "draggable": true,
+                            "clickHandlerFunc": dragHandler,
+                            "clickHandlerArgs": 0
+                        }
+                    ]
+
+                },
+
+                "house": {
+                    "title": "Spring House or Dairy",
+                    "hfov": 110,
+                    "yaw": 5,
+                    "type": "equirectangular",
+                    "panorama": "images/bma-0.jpg",
+                    "hotSpots": [
+                        {
+                            "pitch": -0.6,
+                            "yaw": 37.1,
+                            "type": "scene",
+                            "text": "Mason Circle",
+                            "sceneId": "circle",
+                            "targetYaw": -23,
+                            "targetPitch": 2
+                        }
+                    ]
                 }
-            ]
-        }
-    }
-});
-</script>
+            }
+        });
+
+        function uniqid(prefix = "", random = false) {
+            const sec = Date.now() * 1000 + Math.random() * 1000;
+            const id = sec.toString(16).replace(/\./g, "").padEnd(14, "0");
+            return `${prefix}${id}${random ? `.${Math.trunc(Math.random() * 100000000)}` : ""}`;
+        };
+
+        document.getElementById('panorama').addEventListener('click', function (event) {
+            // coords[0] is pitch, coords[1] is yaw
+            var coords = v.mouseEventToCoords(event);
+            // Do something with the coordinates here...
+            uid = uniqid();
+            console.log(uid);
+            v.addHotSpot({
+                "id": uid,
+                "pitch": coords[0],
+                "yaw": coords[1],
+                "type": "info",
+                "text": "Text",
+                "clickHandlerFunc": dragHandler,
+                "clickHandlerArgs": uid
+            });
+        });
+       
+
+    </script>
 
 </body>
+
 </html>
